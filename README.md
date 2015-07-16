@@ -6,7 +6,7 @@ $ mvn clean
 $ mvn package
 
 $ hadoop fs -mkdir /user/cloudera/GameLogAnalysis/intput/1
-$ hadoop fs -put book.txt /user/cloudera/GameLogAnalysis/input/1
+$ hadoop fs -put demo.txt /user/cloudera/GameLogAnalysis/input/1
 $ hadoop fs -mkdir /user/cloudera/GameLogAnalysis/output/1
 
 $ hadoop jar target/src.mapreduce.demo-0.0.1-SNAPSHOT.jar mapreduce.demo /user/cloudera/GameLogAnalysis/input/1 /user/cloudera/GameLogAnalysis/output/1
