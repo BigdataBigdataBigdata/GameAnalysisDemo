@@ -1,4 +1,9 @@
-{"time_stamp": "2015-07-01 19:19:13","user_id": "UID964","location": { "y": 156,
+
+    {
+        "time_stamp": "2015-07-01 19:19:13",
+        "user_id": "UID964",
+        "location": {
+            "y": 156,
             "x": 292
         }
     }
