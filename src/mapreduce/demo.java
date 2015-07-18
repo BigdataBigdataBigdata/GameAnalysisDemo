@@ -5,40 +5,15 @@ import property.Property;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.StringTokenizer;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.RecordReader;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
-
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.hadoop.util.LineReader;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -46,24 +21,31 @@ import com.google.gson.stream.JsonReader;
  
 public class demo {
     
-	public static class TokenCounterMapper extends Mapper<Object, Text, Text, Text> {
+	public static class JsonMapper extends Mapper<Object, Text, Text, Text> {
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			try {
 
 	            JSONObject jsn = new JSONObject(value.toString());
+	            
 	            Gson gson = new Gson();
-	           
 	            JsonReader reader = new JsonReader(new StringReader(value.toString()));
 	            reader.setLenient(true);
-	            Property property  = gson.fromJson(value.toString(),Property.class); 
+	            Property property  = gson.fromJson(reader,Property.class); 
+	            
+	            //Property property  = gson.fromJson(value.toString(),Property.class); 
+	            
+//	            Collection<Property> readValues = new ObjectMapper().readValue(jsn.toString(), new TypeReference<Collection<Property>>() { });
+//	            for(Property p : readValues){
+//	            	System.out.println(p.user_id + "  "+ p.time_stamp + " " + p.getLocation().getX() + "  " + p.getLocation().getY());
+//	            }
+	            
 			    context.write(new Text(property.user_id), new Text(property.time_stamp +" x is " + property.getLocation().getX()+ " y is " + property.getLocation().getY()));
 
 			} catch (JSONException e) {
 	            // TODO Auto-generated catch block
 	            e.printStackTrace();
-	            JsonReader reader = new JsonReader(new StringReader(value.toString()));
-	            reader.setLenient(true);
+
         }
     }
 }
@@ -81,7 +63,7 @@ public class demo {
         job.setJarByClass(demo.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
-        job.setMapperClass(TokenCounterMapper.class);
+        job.setMapperClass(JsonMapper.class);
         //job.setInputFormatClass(KeyValueTextInputFormat.class);
         job.setNumReduceTasks(0);
         job.setOutputFormatClass(TextOutputFormat.class);
